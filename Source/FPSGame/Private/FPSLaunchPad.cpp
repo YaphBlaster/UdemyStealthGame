@@ -22,6 +22,8 @@ AFPSLaunchPad::AFPSLaunchPad()
 
 	// Create a Box Component named "BoxComp" (this will be used for collision detection)
 	BoxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComp"));
+	// Set BoxComp's Extend
+	BoxComp->SetBoxExtent(FVector(500, 500, 5));
 	// Set the collision to query only (raycasts, sweeps, overlaps)
 	BoxComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	// Clear all collision response channels
