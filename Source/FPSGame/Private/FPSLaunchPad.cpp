@@ -33,6 +33,9 @@ AFPSLaunchPad::AFPSLaunchPad()
 	// Attach this component to the MeshComp (which is the root)
 	BoxComp->SetupAttachment(MeshComp);
 
+	LaunchStrength = 1500;
+	LaunchPitchAngle = 35.0f;
+
 }
 
 // Called when the game starts or when spawned
@@ -54,9 +57,10 @@ void AFPSLaunchPad::PlayEffects()
 // We will override the stock NotifyActorBeginOverlap function with our own
 void AFPSLaunchPad::NotifyActorBeginOverlap(AActor* OtherActor)
 {
-	// Force strength constant
-	// This is the amount of strength that will be used to push the Pawn or PhysicsBody
-	const int FORCE_STRENGTH = 1000.0f;
+	// Make rotator with our specified 'pitch' and convert to a direction vector * intensity
+	FRotator LaunchDirection = GetActorRotation();
+	LaunchDirection.Pitch += LaunchPitchAngle;
+	FVector LaunchVelocity = LaunchDirection.Vector() * LaunchStrength;
 
 	// Cast the overlapped actor (OtherActor) to the FPSCharacter class
 	AFPSCharacter* MyCharacter = Cast<AFPSCharacter>(OtherActor);
@@ -67,14 +71,14 @@ void AFPSLaunchPad::NotifyActorBeginOverlap(AActor* OtherActor)
 	// If the OtherActor was the Pawn
 	if (MyCharacter) {
 		// Launch the character into the air
-		MyCharacter->LaunchCharacter((this->GetActorForwardVector()*FORCE_STRENGTH) + FVector(0.0f, 0.0f, FORCE_STRENGTH), true, true);
+		MyCharacter->LaunchCharacter(LaunchVelocity, true, true);
 		// Play particle effect
 		PlayEffects();
 	}
-	// Else if OtherActor was a PhysicsBody
-	else if (MeshComponent) {
+	// Else if OtherActor was a PhysicsBody and is simulating physics
+	else if (MeshComponent && MeshComponent->IsSimulatingPhysics()) {
 		// Add an impulse to the MeshComponent
-		MeshComponent->AddImpulse((this->GetActorForwardVector()*FORCE_STRENGTH) + FVector(0.0f, 0.0f, FORCE_STRENGTH), NAME_None, true);
+		MeshComponent->AddImpulse(LaunchVelocity, NAME_None, true);
 		// Play particle effect
 		PlayEffects();
 	}

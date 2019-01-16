@@ -29,6 +29,18 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 		UBoxComponent* BoxComp;
 
+	/* Total impulse added to the character or physicsBody on overlap event
+		Marked 'EditInstanceOnly' to allow in-level editing of this property per instance
+	*/
+	UPROPERTY(EditInstanceOnly, Category = "LaunchPad")
+		float LaunchStrength;
+
+	/* Angle added on top of actor rotation to launch character or physicsBody
+		Marked 'EditInstanceOnly' to allow in-level editing of this property per instance
+	*/
+	UPROPERTY(EditInstanceOnly, Category = "LaunchPad")
+		float LaunchPitchAngle;
+
 	// Exposed to blueprints
 	// Particle System that will be played when the LaunchPad is activated
 	UPROPERTY(EditDefaultsOnly, Category = "Effects")
