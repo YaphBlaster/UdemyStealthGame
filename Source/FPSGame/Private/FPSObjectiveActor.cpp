@@ -26,7 +26,7 @@ void AFPSObjectiveActor::BeginPlay()
 	Super::BeginPlay();
 
 	PlayEffects();
-	
+
 }
 
 void AFPSObjectiveActor::PlayEffects()
