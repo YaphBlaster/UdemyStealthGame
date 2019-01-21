@@ -65,7 +65,15 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent, Category = "AI")
 		void OnStateChanged(EAIState NewState);
 
+	// CHALLENGE: Add waypoint patrolling
+	UPROPERTY()
+		TArray<AActor*> Waypoints;
 
+	UFUNCTION()
+		ATargetPoint* GetRandomWaypoint();
+
+	UFUNCTION()
+		void GoToRandomWaypoint();
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

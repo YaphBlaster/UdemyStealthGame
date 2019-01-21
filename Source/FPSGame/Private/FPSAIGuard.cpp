@@ -4,6 +4,7 @@
 #include "Perception/PawnSensingComponent.h"
 #include "DrawDebugHelpers.h"
 #include "FPSGameMode.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AFPSAIGuard::AFPSAIGuard()
@@ -32,6 +33,11 @@ void AFPSAIGuard::BeginPlay()
 	Super::BeginPlay();
 
 	OriginalRotation = GetActorRotation();
+
+	// Get all the waypoints
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AFPSAIGuard:StaticClass(), Waypoints);
+
+	GoToRandomWaypoint();
 
 }
 
@@ -116,6 +122,12 @@ void AFPSAIGuard::SetGuardState(EAIState NewState)
 	GuardState = NewState;
 
 	OnStateChanged(GuardState);
+}
+
+ATargetPoint* AFPSAIGuard::GetRandomWaypoint()
+{
+	auto index = FMath.RandRange(0, Waypoints.Num() - 1);
+	return Cast<ATargetPoint>(Waypoints[index]);
 }
 
 // Called every frame
