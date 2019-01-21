@@ -8,6 +8,22 @@
 
 class UPawnSensingComponent;
 
+// Enum declaration
+// NOTES:
+// Always outside of main class
+// Convention is to start with 'E' (EAIState)
+// BlueprintType is used to expose the enum to blueprints
+// uint8 is needed to expose to blueprint as well (otherwise it could have been left blank)
+UENUM(BlueprintType)
+enum class EAIState : uint8
+{
+	Idle,
+
+	Suspiscious,
+
+	Alerted
+};
+
 UCLASS()
 class FPSGAME_API AFPSAIGuard : public ACharacter
 {
@@ -31,6 +47,24 @@ protected:
 
 	UFUNCTION()
 		void OnNoiseHeard(APawn* NoiseInstigator, const FVector& Location, float Volume);
+
+	FRotator OriginalRotation;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "NewRotation")
+		FRotator NewRotation;
+
+	UFUNCTION()
+		void ResetOrientation();
+
+	FTimerHandle TimerHandle_ResetOrientation;
+
+	EAIState GuardState;
+
+	void SetGuardState(EAIState NewState);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "AI")
+		void OnStateChanged(EAIState NewState);
+
 
 public:
 	// Called every frame

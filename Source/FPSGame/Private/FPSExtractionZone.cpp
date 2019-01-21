@@ -65,12 +65,12 @@ void AFPSExtractionZone::HandleOverlap(UPrimitiveComponent* OverlappedComponent,
 
 	if (MyPawn->bIsCarryingObjective) {
 		// Get the worlds GameMode (Get Auth is to get the servers GameMode)
-	// Cast FPSGameMode class to game's GameMode
+		// Cast FPSGameMode class to game's GameMode
 		AFPSGameMode* GM = Cast<AFPSGameMode>(GetWorld()->GetAuthGameMode());
 
 		// Check to see if GM exists
 		if (GM) {
-			GM->CompleteMission(MyPawn);
+			GM->CompleteMission(MyPawn, true);
 		}
 
 		// Double colon :: is for static functions

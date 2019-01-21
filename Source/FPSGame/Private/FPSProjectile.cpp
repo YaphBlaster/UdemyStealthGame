@@ -4,7 +4,7 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
 
-AFPSProjectile::AFPSProjectile() 
+AFPSProjectile::AFPSProjectile()
 {
 	// Use a sphere as a simple collision representation
 	CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
@@ -39,6 +39,13 @@ void AFPSProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPr
 	{
 		OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
 
-		Destroy();
 	}
+
+	// Make noise in the level
+	// Param1 = loudness (0.0f - 1.0f)
+	// Param2 = the instigator of the noise
+	MakeNoise(1.0f, Instigator);
+
+	Destroy();
+
 }
