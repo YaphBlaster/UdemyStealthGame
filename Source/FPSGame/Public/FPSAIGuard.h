@@ -66,10 +66,13 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent, Category = "AI")
 		void OnStateChanged(EAIState NewState);
 
-	UPROPERTY(EditInstanceOnly, Category = "AI")
-		bool bIsPatrol;
+
 
 	AFPSGuardAIController* AIController;
+
+public:
+	UPROPERTY(EditInstanceOnly, Category = "AI")
+		bool bIsPatrol;
 
 
 public:

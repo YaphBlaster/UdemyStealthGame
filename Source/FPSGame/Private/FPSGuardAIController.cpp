@@ -3,12 +3,22 @@
 #include "FPSGuardAIController.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/TargetPoint.h"
+#include "FPSAIGuard.h"
 
 void AFPSGuardAIController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATargetPoint::StaticClass(), Waypoints);
+	AFPSAIGuard* GuardCharacter = Cast<AFPSAIGuard>(GetCharacter());
+
+	UE_LOG(LogTemp, Warning, TEXT("Guard = %s"), *GuardCharacter->GetName());
+
+	if (GuardCharacter->bIsPatrol)
+	{
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATargetPoint::StaticClass(), Waypoints);
+
+	}
+
 
 }
 
