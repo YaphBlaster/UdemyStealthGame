@@ -35,6 +35,7 @@ protected:
 	UFUNCTION()
 		void GoToRandomWaypoint();
 
+public:
 	FTimerHandle TimerHandle;
 
 };

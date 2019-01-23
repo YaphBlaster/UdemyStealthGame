@@ -4,6 +4,7 @@
 #include "Perception/PawnSensingComponent.h"
 #include "DrawDebugHelpers.h"
 #include "FPSGameMode.h"
+#include "FPSGuardAIController.h"
 
 // Sets default values
 AFPSAIGuard::AFPSAIGuard()
@@ -57,7 +58,11 @@ void AFPSAIGuard::OnPawnSeen(APawn* SeenPawn)
 
 	SetGuardState(EAIState::Alerted);
 
+	AFPSGuardAIController* AIController = Cast<AFPSGuardAIController>(GetController());
+	AIController->StopMovement();
+	GetWorldTimerManager().ClearTimer(AIController->TimerHandle);
 }
+
 
 void AFPSAIGuard::OnNoiseHeard(APawn* NoiseInstigator, const FVector& Location, float Volume)
 {
@@ -92,6 +97,8 @@ void AFPSAIGuard::OnNoiseHeard(APawn* NoiseInstigator, const FVector& Location, 
 	GetWorldTimerManager().SetTimer(TimerHandle_ResetOrientation, this, &AFPSAIGuard::ResetOrientation, 3.0f);
 
 	SetGuardState(EAIState::Suspiscious);
+
+	GetController()->StopMovement();
 }
 
 void AFPSAIGuard::ResetOrientation()
