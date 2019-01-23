@@ -93,12 +93,16 @@ void AFPSAIGuard::OnNoiseHeard(APawn* NoiseInstigator, const FVector& Location, 
 
 	SetActorRotation(NewRotation);
 
+
+	AFPSGuardAIController* AIController = Cast<AFPSGuardAIController>(GetController());
+	AIController->StopMovement();
+	GetWorldTimerManager().ClearTimer(AIController->TimerHandle);
+
 	// After 3 Seconds, reset actor rotation
 	GetWorldTimerManager().SetTimer(TimerHandle_ResetOrientation, this, &AFPSAIGuard::ResetOrientation, 3.0f);
 
 	SetGuardState(EAIState::Suspiscious);
 
-	GetController()->StopMovement();
 }
 
 void AFPSAIGuard::ResetOrientation()
@@ -108,7 +112,13 @@ void AFPSAIGuard::ResetOrientation()
 		return;
 	}
 
+	SetGuardState(EAIState::Idle);
+
 	SetActorRotation(OriginalRotation);
+
+	AFPSGuardAIController* AIController = Cast<AFPSGuardAIController>(GetController());
+	AIController->GoToRandomWaypoint();
+
 }
 
 void AFPSAIGuard::SetGuardState(EAIState NewState)

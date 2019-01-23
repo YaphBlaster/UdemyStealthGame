@@ -17,7 +17,7 @@ void AFPSGuardAIController::BeginPlay()
 void AFPSGuardAIController::OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result)
 {
 	Super::OnMoveCompleted(RequestID, Result);
-	GetWorldTimerManager().SetTimer(TimerHandle, this, &AFPSGuardAIController::GoToRandomWaypoint, 1.0f, false);
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &AFPSGuardAIController::GoToRandomWaypoint, 3.0f, false);
 }
 
 ATargetPoint* AFPSGuardAIController::GetRandomWayPoint()

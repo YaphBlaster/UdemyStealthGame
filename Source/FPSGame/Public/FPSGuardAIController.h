@@ -32,10 +32,12 @@ protected:
 	UFUNCTION()
 		ATargetPoint* GetRandomWayPoint();
 
-	UFUNCTION()
-		void GoToRandomWaypoint();
+
 
 public:
 	FTimerHandle TimerHandle;
+
+	UFUNCTION()
+		void GoToRandomWaypoint();
 
 };
