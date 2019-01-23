@@ -10,14 +10,13 @@ void AFPSGuardAIController::BeginPlay()
 
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATargetPoint::StaticClass(), Waypoints);
 
-	GoToRandomWaypoint();
 }
 
 // Whenever we override a function, you must call Super
 void AFPSGuardAIController::OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result)
 {
 	Super::OnMoveCompleted(RequestID, Result);
-	GetWorldTimerManager().SetTimer(TimerHandle, this, &AFPSGuardAIController::GoToRandomWaypoint, 3.0f, false);
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &AFPSGuardAIController::GoToRandomWaypoint, 1.0f, false);
 }
 
 ATargetPoint* AFPSGuardAIController::GetRandomWayPoint()

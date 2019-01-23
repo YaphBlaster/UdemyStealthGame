@@ -7,6 +7,7 @@
 #include "FPSAIGuard.generated.h"
 
 class UPawnSensingComponent;
+class AFPSGuardAIController;
 
 // Enum declaration
 // NOTES:
@@ -64,6 +65,11 @@ protected:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "AI")
 		void OnStateChanged(EAIState NewState);
+
+	UPROPERTY(EditInstanceOnly, Category = "AI")
+		bool bIsPatrol;
+
+	AFPSGuardAIController* AIController;
 
 
 public:
