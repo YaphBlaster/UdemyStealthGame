@@ -29,6 +29,11 @@ AFPSProjectile::AFPSProjectile()
 
 	// Die after 3 seconds by default
 	InitialLifeSpan = 3.0f;
+
+	// Allow replication
+	SetReplicates(true);
+	// Allow movement replication (Location, Rotation, ...)
+	SetReplicateMovement(true);
 }
 
 
@@ -38,14 +43,19 @@ void AFPSProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPr
 	if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL) && OtherComp->IsSimulatingPhysics())
 	{
 		OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
-
 	}
 
-	// Make noise in the level
-	// Param1 = loudness (0.0f - 1.0f)
-	// Param2 = the instigator of the noise
-	MakeNoise(1.0f, Instigator);
+	if (Role == ROLE_Authority)
+	{
+		// Make noise in the level
+		// Param1 = loudness (0.0f - 1.0f)
+		// Param2 = the instigator of the noise
+		MakeNoise(1.0f, Instigator);
 
-	Destroy();
+		Destroy();
+	}
+
+
+
 
 }

@@ -57,6 +57,12 @@ public:
 
 protected:
 
+	// Server Function
+	// Reliable = Definitely will eventually reach server
+	//
+	UFUNCTION(Server, Reliable, WithValidation)
+		void ServerFire();
+
 	/** Fires a projectile. */
 	void Fire();
 
@@ -74,6 +80,8 @@ public:
 
 	/** Returns FirstPersonCameraComponent subobject **/
 	UCameraComponent* GetFirstPersonCameraComponent() const { return CameraComponent; }
+
+	virtual void Tick(float DeltaTime) override;
 
 };
 

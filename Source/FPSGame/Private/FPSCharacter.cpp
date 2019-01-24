@@ -48,8 +48,27 @@ void AFPSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 }
 
+void AFPSCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
 
-void AFPSCharacter::Fire()
+	//// If the player is not locally controlled
+	//if (!IsLocallyControlled())
+	//{
+	//	// Get the current player CameraComponent's rotation
+	//	FRotator NewRot = CameraComponent->RelativeRotation;
+	//	// Set the pitch to the RemoteViewPitch
+	//	// RemoteViewPitch is inherited by default from the pawn class
+	//	// RemoteViewPitch is a replicated variable
+	//	// We convert RemoteViewPitch back to a range of 0  360 degrees
+	//	NewRot.Pitch = RemoteViewPitch * 360.0f / 255.0f;
+
+	//	CameraComponent->SetRelativeRotation(NewRot);
+	//}
+}
+
+// Server function implementation
+void AFPSCharacter::ServerFire_Implementation()
 {
 	// try and fire a projectile
 	if (ProjectileClass)
@@ -68,6 +87,17 @@ void AFPSCharacter::Fire()
 		GetWorld()->SpawnActor<AFPSProjectile>(ProjectileClass, MuzzleLocation, MuzzleRotation, ActorSpawnParams);
 
 	}
+}
+
+// Sanity Checks for server function
+bool AFPSCharacter::ServerFire_Validate()
+{
+	return true;
+}
+
+void AFPSCharacter::Fire()
+{
+	ServerFire();
 
 	// try and play the sound if specified
 	if (FireSound)
