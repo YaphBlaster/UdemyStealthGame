@@ -50,6 +50,8 @@ void AFPSObjectiveActor::NotifyActorBeginOverlap(AActor* OtherActor)
 	{
 		AFPSCharacter* MyCharacter = Cast<AFPSCharacter>(OtherActor);
 		if (MyCharacter) {
+			// When this variable is set on the Server
+			// It will send a message out to the clients because the variable is replicated
 			MyCharacter->bIsCarryingObjective = true;
 
 			Destroy();

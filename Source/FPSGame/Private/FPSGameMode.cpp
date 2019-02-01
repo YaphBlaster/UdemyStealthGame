@@ -6,6 +6,8 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
 
+// GameModes only run on servers
+// There are no instances of GameMode on clients
 AFPSGameMode::AFPSGameMode()
 {
 	// set default pawn class to our Blueprinted character

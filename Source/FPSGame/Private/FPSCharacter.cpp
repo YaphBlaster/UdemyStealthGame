@@ -7,6 +7,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/PawnNoiseEmitterComponent.h"
+#include "UnrealNetwork.h"
 
 
 AFPSCharacter::AFPSCharacter()
@@ -135,4 +136,19 @@ void AFPSCharacter::MoveRight(float Value)
 		// add movement in that direction
 		AddMovementInput(GetActorRightVector(), Value);
 	}
+}
+
+// This function sets the replication rules for our properties
+void AFPSCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	// Setting up our replicated variable
+	// Meaning that when this variable is set on the server
+	// All the clients will have this variable be updated
+	DOREPLIFETIME(AFPSCharacter, bIsCarryingObjective);
+
+	// Useful optimization 
+	// Will only set the replication for the owner
+	//DOREPLIFETIME_CONDITION(AFPSCharacter, bIsCarryingObjective, COND_OwnerOnly);
 }
