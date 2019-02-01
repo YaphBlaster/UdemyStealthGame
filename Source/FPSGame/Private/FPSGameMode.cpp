@@ -5,6 +5,7 @@
 #include "FPSCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
+#include "FPSGameState.h"
 
 // GameModes only run on servers
 // There are no instances of GameMode on clients
@@ -16,15 +17,17 @@ AFPSGameMode::AFPSGameMode()
 
 	// use our custom HUD class
 	HUDClass = AFPSHUD::StaticClass();
+
+	// Set the GameMode's GameState class to our FPSGameState's class
+	// StaticClass returns the reference's static class
+	// This line makes it so that when we call GetGameState, it will return this reference
+	GameStateClass = AFPSGameState::StaticClass();
 }
 
 
 void AFPSGameMode::CompleteMission(APawn* InstigatorPawn, bool bMissionSuccess)
 {
 	if (InstigatorPawn) {
-		// Disable input
-		// Expects a player controller but you can provide nullptr and it will default to the player controller the pawn has
-		InstigatorPawn->DisableInput(nullptr);
 
 		// Check to see if there is a SpectatingViewPointClass set up
 		if (SpectatingViewpointClass)
@@ -57,7 +60,17 @@ void AFPSGameMode::CompleteMission(APawn* InstigatorPawn, bool bMissionSuccess)
 		}
 	}
 
-	OnMissionCompleted(InstigatorPawn, bMissionSuccess);
+	// Create GameState reference
+	AFPSGameState* GS = GetGameState<AFPSGameState>();
 
+	// If the GameState exists (Cast was successful)
+	if (GS)
+	{
+		// When referncing replicated functions, do not use the `${FUNCTION_NAME}_Implementation` method
+		// Instead use the regularly named function
+		GS->MulticastOnMissionComplete(InstigatorPawn, bMissionSuccess);
+	}
+
+	OnMissionCompleted(InstigatorPawn, bMissionSuccess);
 
 }
