@@ -46,12 +46,18 @@ void AFPSGameMode::CompleteMission(APawn* InstigatorPawn, bool bMissionSuccess)
 				// Get the pawns controller and cast it to PlayerController
 				APlayerController* PC = Cast<APlayerController>(InstigatorPawn->GetController());
 
-				// Check to see if the player controller exists
-				if (PC) {
-
-					// Set the player controllers view target to the new position
-					PC->SetViewTargetWithBlend(NewViewTarget, 0.5f, EViewTargetBlendFunction::VTBlend_Cubic);
+				// Iterate over every player controller in the world
+				// The syntax is a little strange but it's basically a regular loop (for i=0; i<array.length(); i++)
+				for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; It++)
+				{
+					APlayerController* PC = It->Get();
+					if (PC) {
+						// Set the player controllers view target to the new position
+						// SetViewTargetWithBlend is always replicated
+						PC->SetViewTargetWithBlend(NewViewTarget, 0.5f, EViewTargetBlendFunction::VTBlend_Cubic);
+					}
 				}
+
 			}
 		}
 		else
