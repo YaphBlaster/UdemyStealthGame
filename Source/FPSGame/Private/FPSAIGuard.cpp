@@ -5,8 +5,10 @@
 #include "DrawDebugHelpers.h"
 #include "FPSGameMode.h"
 #include "FPSGuardAIController.h"
+#include "UnrealNetwork.h"
 
 // Sets default values
+// NOTE: AI logic inately runs only on server and not client
 AFPSAIGuard::AFPSAIGuard()
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -133,7 +135,11 @@ void AFPSAIGuard::ResetOrientation()
 		AIController->GoToRandomWaypoint();
 
 	}
+}
 
+void AFPSAIGuard::OnRep_GuardState()
+{
+	OnStateChanged(GuardState);
 
 }
 
@@ -148,7 +154,7 @@ void AFPSAIGuard::SetGuardState(EAIState NewState)
 	// Set the current state to the new state
 	GuardState = NewState;
 
-	OnStateChanged(GuardState);
+	OnRep_GuardState();
 }
 
 // Called every frame
@@ -157,4 +163,9 @@ void AFPSAIGuard::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+void AFPSAIGuard::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
+	DOREPLIFETIME(AFPSAIGuard, GuardState);
+}

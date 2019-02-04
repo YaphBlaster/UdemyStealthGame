@@ -59,17 +59,24 @@ protected:
 
 	FTimerHandle TimerHandle_ResetOrientation;
 
-	EAIState GuardState;
+	UPROPERTY(ReplicatedUsing = OnRep_GuardState)
+		EAIState GuardState;
+
+	UFUNCTION()
+		void OnRep_GuardState();
 
 	void SetGuardState(EAIState NewState);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "AI")
 		void OnStateChanged(EAIState NewState);
 
-	UPROPERTY(EditInstanceOnly, Category = "AI")
-		bool bIsPatrol;
+
 
 	AFPSGuardAIController* AIController;
+
+public:
+	UPROPERTY(EditInstanceOnly, Category = "AI")
+		bool bIsPatrol;
 
 
 public:

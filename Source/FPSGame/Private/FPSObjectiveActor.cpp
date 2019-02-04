@@ -18,6 +18,10 @@ AFPSObjectiveActor::AFPSObjectiveActor()
 	SphereComp->SetCollisionResponseToAllChannels(ECR_Ignore);
 	SphereComp->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 	SphereComp->SetupAttachment(MeshComp);
+
+	// We want this actor to be replicated
+	// NOTE: This can be done in Blueprints under a field in the root component called 'Replication'
+	SetReplicates(true);
 }
 
 // Called when the game starts or when spawned
@@ -35,17 +39,23 @@ void AFPSObjectiveActor::PlayEffects()
 }
 
 
+// Collision events happen on both client and server
 void AFPSObjectiveActor::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
 
 	PlayEffects();
 
-	AFPSCharacter* MyCharacter = Cast<AFPSCharacter>(OtherActor);
-	if (MyCharacter) {
-		MyCharacter->bIsCarryingObjective = true;
+	if (Role == ROLE_Authority)
+	{
+		AFPSCharacter* MyCharacter = Cast<AFPSCharacter>(OtherActor);
+		if (MyCharacter) {
+			// When this variable is set on the Server
+			// It will send a message out to the clients because the variable is replicated
+			MyCharacter->bIsCarryingObjective = true;
 
-		Destroy();
+			Destroy();
+		}
 	}
 
 }

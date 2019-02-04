@@ -5,7 +5,10 @@
 #include "FPSCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
+#include "FPSGameState.h"
 
+// GameModes only run on servers
+// There are no instances of GameMode on clients
 AFPSGameMode::AFPSGameMode()
 {
 	// set default pawn class to our Blueprinted character
@@ -14,15 +17,17 @@ AFPSGameMode::AFPSGameMode()
 
 	// use our custom HUD class
 	HUDClass = AFPSHUD::StaticClass();
+
+	// Set the GameMode's GameState class to our FPSGameState's class
+	// StaticClass returns the reference's static class
+	// This line makes it so that when we call GetGameState, it will return this reference
+	GameStateClass = AFPSGameState::StaticClass();
 }
 
 
 void AFPSGameMode::CompleteMission(APawn* InstigatorPawn, bool bMissionSuccess)
 {
 	if (InstigatorPawn) {
-		// Disable input
-		// Expects a player controller but you can provide nullptr and it will default to the player controller the pawn has
-		InstigatorPawn->DisableInput(nullptr);
 
 		// Check to see if there is a SpectatingViewPointClass set up
 		if (SpectatingViewpointClass)
@@ -41,12 +46,18 @@ void AFPSGameMode::CompleteMission(APawn* InstigatorPawn, bool bMissionSuccess)
 				// Get the pawns controller and cast it to PlayerController
 				APlayerController* PC = Cast<APlayerController>(InstigatorPawn->GetController());
 
-				// Check to see if the player controller exists
-				if (PC) {
-
-					// Set the player controllers view target to the new position
-					PC->SetViewTargetWithBlend(NewViewTarget, 0.5f, EViewTargetBlendFunction::VTBlend_Cubic);
+				// Iterate over every player controller in the world
+				// The syntax is a little strange but it's basically a regular loop (for i=0; i<array.length(); i++)
+				for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; It++)
+				{
+					APlayerController* PC = It->Get();
+					if (PC) {
+						// Set the player controllers view target to the new position
+						// SetViewTargetWithBlend is always replicated
+						PC->SetViewTargetWithBlend(NewViewTarget, 0.5f, EViewTargetBlendFunction::VTBlend_Cubic);
+					}
 				}
+
 			}
 		}
 		else
@@ -55,7 +66,17 @@ void AFPSGameMode::CompleteMission(APawn* InstigatorPawn, bool bMissionSuccess)
 		}
 	}
 
-	OnMissionCompleted(InstigatorPawn, bMissionSuccess);
+	// Create GameState reference
+	AFPSGameState* GS = GetGameState<AFPSGameState>();
 
+	// If the GameState exists (Cast was successful)
+	if (GS)
+	{
+		// When referncing replicated functions, do not use the `${FUNCTION_NAME}_Implementation` method
+		// Instead use the regularly named function
+		GS->MulticastOnMissionComplete(InstigatorPawn, bMissionSuccess);
+	}
+
+	OnMissionCompleted(InstigatorPawn, bMissionSuccess);
 
 }

@@ -69,6 +69,7 @@ void AFPSExtractionZone::HandleOverlap(UPrimitiveComponent* OverlappedComponent,
 		AFPSGameMode* GM = Cast<AFPSGameMode>(GetWorld()->GetAuthGameMode());
 
 		// Check to see if GM exists
+		// This function will always fail on clients because GameMode does not exist on client machines
 		if (GM) {
 			GM->CompleteMission(MyPawn, true);
 		}

@@ -7,6 +7,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/PawnNoiseEmitterComponent.h"
+#include "UnrealNetwork.h"
 
 
 AFPSCharacter::AFPSCharacter()
@@ -48,8 +49,27 @@ void AFPSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 }
 
+void AFPSCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
 
-void AFPSCharacter::Fire()
+	//// If the player is not locally controlled
+	//if (!IsLocallyControlled())
+	//{
+	//	// Get the current player CameraComponent's rotation
+	//	FRotator NewRot = CameraComponent->RelativeRotation;
+	//	// Set the pitch to the RemoteViewPitch
+	//	// RemoteViewPitch is inherited by default from the pawn class
+	//	// RemoteViewPitch is a replicated variable
+	//	// We convert RemoteViewPitch back to a range of 0  360 degrees
+	//	NewRot.Pitch = RemoteViewPitch * 360.0f / 255.0f;
+
+	//	CameraComponent->SetRelativeRotation(NewRot);
+	//}
+}
+
+// Server function implementation
+void AFPSCharacter::ServerFire_Implementation()
 {
 	// try and fire a projectile
 	if (ProjectileClass)
@@ -68,6 +88,17 @@ void AFPSCharacter::Fire()
 		GetWorld()->SpawnActor<AFPSProjectile>(ProjectileClass, MuzzleLocation, MuzzleRotation, ActorSpawnParams);
 
 	}
+}
+
+// Sanity Checks for server function
+bool AFPSCharacter::ServerFire_Validate()
+{
+	return true;
+}
+
+void AFPSCharacter::Fire()
+{
+	ServerFire();
 
 	// try and play the sound if specified
 	if (FireSound)
@@ -105,4 +136,19 @@ void AFPSCharacter::MoveRight(float Value)
 		// add movement in that direction
 		AddMovementInput(GetActorRightVector(), Value);
 	}
+}
+
+// This function sets the replication rules for our properties
+void AFPSCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	// Setting up our replicated variable
+	// Meaning that when this variable is set on the server
+	// All the clients will have this variable be updated
+	DOREPLIFETIME(AFPSCharacter, bIsCarryingObjective);
+
+	// Useful optimization 
+	// Will only set the replication for the owner
+	//DOREPLIFETIME_CONDITION(AFPSCharacter, bIsCarryingObjective, COND_OwnerOnly);
 }
